@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+User Detail Page
+{% endblock %}
+
+{% block content %}
+<div>
+    <img src="{{user.image_url}}" alt="{{user.first_name}} {{user.last_name}} profile picture" id="profile_img">
+</div>
+<div>
+    <h1>{{user.first_name}} {{user.last_name}}</h1>
+    <a href="/users/{{user.id}}/edit">
+        <button id="edit_btn" class="btn">Edit</button>
+    </a>
+    <a href="/users/{{user.id}}/delete">
+        <button id="delete_btn" class="btn">Delete</button>
+    </a>
+</div>
+<div>
+    <h2>Posts</h2>
+    <ul>
+        {% if posts %}
+        {% for post in posts%}
+        <a href="/posts/{{post.id}}">
+            <li>{{post.title}}</li>
+        </a>
+        {% endfor %}
+        {% endif %}
+    </ul>
+    <a href="/users/{{user.id}}/posts/new">
+        <button id="add_post_btn" class="btn">Add Post</button>
+    </a>
+</div>
+{% endblock %}

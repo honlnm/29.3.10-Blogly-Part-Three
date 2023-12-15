@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Post Detail Page
+{% endblock %}
+
+{% block content %}
+
+<div>
+    <h1>{{post.title}}</h1>
+</div>
+<div>
+    <p>{{post.content}}</p>
+    <img src="{{post.image_url}}" alt="post img" id="post_img">
+</div>
+<div>
+    <p>By {{user.first_name}} {{user.last_name}}</p>
+</div>
+<div>
+    <a href="/users/{{user.id}}">
+        <button id="post_cancel_btn" class="btn">Cancel</button>
+    </a>
+    <a href="/posts/{{post.id}}/edit">
+        <button id="post_edit_btn" class="btn">Edit</button>
+    </a>
+    <a href="/posts/{{post.id}}/delete">
+        <button id="post_delete_btn" class="btn">Delete</button>
+    </a>
+</div>
+{% endblock %}
