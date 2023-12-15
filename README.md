@@ -1,94 +1,100 @@
 # Blogly
 ## Springboard Instructions
-## **Part Two: Adding Posts**
 
-In this part, we’ll add functionality for blog posts using the one-to-many features of SQLAlchemy.
+## **Part Three: Add M2M Relationship**
 
-### **Post Model**
+The last part will be to add a “tagging” feature.
 
-Next, add another model, for blog posts (call it ***Post***).
+### **Tag Model**
 
-Post should have an:
+![Screen Shot 2023-05-08 at 3.03.13 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a4b764dd-ee1f-450a-a913-e14353e18216/Screen_Shot_2023-05-08_at_3.03.13_PM.png)
 
-- ***id***, like for ***User***
-- ***title***
-- ***content***
-- ***created_at*** a date+time that should automatically default to the when the post is created
-- a foreign key to the ***User*** table
+The site will have a table of tags — there should be an SQLAlchemy model for this:
+
+- ***id***
+- ***name***, (unique!)
+
+There should also be a model for ***PostTag***, which joins together a ***Post*** and a ***Tag***. It will have foreign keys for the both the ***post_id*** and ***tag_id***. Since we don’t want the same post to be tagged to the same tag more than once, we’ll want the combination of post + tag to be unique. It also makes sense that neither the ***post_id*** nor ***tag_id*** can be null. Therefore, we’ll use a “composite primary key” for this table— a primary key made of more than one field. You may have to do some research to learn how to do this in SQLAlchemy.
+
+Add relationships so you can see the ***.tags*** for a post, and the ***.posts*** for a tag.
+
+**STOP** and play around with this feature in ***IPython*** before continuing.
 
 ### **User Interface**
 
-### **User Interface**
+1. **Add Tag**
 
-Here is what you should build:
+![Screen Shot 2023-05-08 at 3.04.45 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/adcb908c-31bc-469e-934a-f7df80b75dd2/Screen_Shot_2023-05-08_at_3.04.45_PM.png)
 
-1. **Better User Detail**
+1. **Edit Tag**
 
-![user-w-posts.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e93f8ff7-04ff-4ec7-b0f7-cec22a5f308e/user-w-posts.png)
+![Screen Shot 2023-05-08 at 3.09.35 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/41092caa-0fb7-43ff-a794-1a2be68296cf/Screen_Shot_2023-05-08_at_3.09.35_PM.png)
 
-1. **New Post Form**
+1. **List Tag**
 
-![add-post.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/740c1c4f-b709-429c-8c09-b14824dbdaaf/add-post.png)
+![Screen Shot 2023-05-08 at 3.11.42 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c61055c9-d050-415a-88f2-f5fdfb644dd5/Screen_Shot_2023-05-08_at_3.11.42_PM.png)
 
-1. **Post Detail Page**
+1. **Show Tag**
 
-![detail-post.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5fc525e7-3a42-4059-9418-076af814b31f/detail-post.png)
+![Screen Shot 2023-05-08 at 3.14.48 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/527c480e-63a4-4d62-a97a-25f278ad4d3d/Screen_Shot_2023-05-08_at_3.14.48_PM.png)
 
-1. **Post Edit Page**
+1.  **Show Post With Tags**
+    
+    ![Screen Shot 2023-05-08 at 3.13.19 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e236b58b-1650-480d-98a7-9b276a634347/Screen_Shot_2023-05-08_at_3.13.19_PM.png)
+    
+2. **Add Post With Tags**
 
-![edit-post.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e8fe6a75-9cbc-4d3e-8756-a861e08a435c/edit-post.png)
+![Screen Shot 2023-05-08 at 3.16.01 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/82c29a03-c0f8-4e9f-b985-749ab10a571d/Screen_Shot_2023-05-08_at_3.16.01_PM.png)
 
-### ****Add Post Routes****
+1. **Edit Post With Tags**
 
-**GET */users/[user-id]/posts/new :*** Show form to add a post for that user.
+![Screen Shot 2023-05-08 at 3.17.48 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/2ed79536-7149-430c-85e8-ef1a220484da/Screen_Shot_2023-05-08_at_3.17.48_PM.png)
 
-**POST */users/[user-id]/posts/new :*** Handle add form; add post and redirect to the user detail page.
+### ****Add Routes****
 
-**GET */posts/[post-id] :*** Show a post. Show buttons to edit and delete the post.
+**GET */tags :*** Lists all tags, with links to the tag detail page.
 
-**GET */posts/[post-id]/edit :*** Show form to edit a post, and to cancel (back to user page).
+**GET */tags/[tag-id] :*** Show detail about a tag. Have links to edit form and to delete.
 
-**POST */posts/[post-id]/edit :*** Handle editing of a post. Redirect back to the post view.
+**GET */tags/new :*** Shows a form to add a new tag.
 
-**POST */posts/[post-id]/delete :*** Delete the post.
+**POST */tags/new :*** Process add form, adds tag, and redirect to tag list.
 
-### **Change the User Page**
+**GET */tags/[tag-id]/edit :*** Show edit form for a tag.
 
-Change the user page to show the posts for that user.
+**POST */tags/[tag-id]/edit :*** Process edit form, edit tag, and redirects to the tags list.
 
-### **Testing**
+**POST */tags/[tag-id]/delete :*** Delete a tag.
 
-Update any broken tests and add more testing
+### **Update Routes for Posts**
 
-### **Celebrate!**
+Update the route that shows a post so that it shows all the tags for that post.
 
-Yay! Congratulations on the first big two parts.
+Update the routes for adding/editing posts so that it shows a listing of the tags and lets you pick which tag(s) apply to that post. (You can use whatever form element you want here: a multi-select, a list of checkboxes, or any other way you can solve this.
 
-## **Parts Two Further Study** OPTIONAL
+<aside>
+💡 **Hint:** The normal way to get a value from a form, `request.form['key']`, only returns *one* value from this form. To get all of the values for that key in the form, you’ll want to investigate ***.getlist***.
 
-There are several possible additional tasks here.
+</aside>
 
-### **Make a Homepage**
+## **Further Study** OPTIONAL
 
-Change the homepage to a page that shows the 5 most recent posts.
+### **Update Tag Add/Edit Forms**
 
-### **Show Friendly Date**
+Edit these forms to let you pick posts for this tag.
 
-When listing the posts (on the post index page, the homepage, and the user detail page), show a friendly-looking version of the date, like “May 1, 2015, 10:30 AM”.
+1. **Edit Tag With Posts**
 
-### **Using Flash Messages for Notifications**
+![Screen Shot 2023-05-08 at 3.19.18 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/3a210fe9-2725-439b-a68e-0e8cccf8faab/Screen_Shot_2023-05-08_at_3.19.18_PM.png)
 
-Use the Flask “flash message” feature to notify about form errors/successful submissions.
+1. **Edit Tag With Posts**
 
-### **Add a Custom “404 Error Page”**
+![Screen Shot 2023-05-08 at 3.20.27 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/129c06c1-7df8-4c8e-8f0f-966c1048b870/Screen_Shot_2023-05-08_at_3.20.27_PM.png)
 
-Research how to make a custom page that appears when a 404 error happens in Flask. Make such a page.
+1. If you made a homepage, make this show tags, too:
 
-### **Cascade Deletion of User**
+![Screen Shot 2023-05-08 at 3.21.10 PM.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b925b395-caac-44ef-8d53-180452246829/Screen_Shot_2023-05-08_at_3.21.10_PM.png)
 
-If you try to delete a user that has posts, you’ll get an ***IntegrityError*** — PostgreSQL raises an error because that would leave posts without a valid ***user_id***.
+### **Add Tests**
 
-When a user is deleted, the related posts should be deleted, too.
-
-You can find help for this at [Cascades](https://docs.sqlalchemy.org/en/latest/orm/cascades.html)>`_
-
+Add tests for your most critical pages.
