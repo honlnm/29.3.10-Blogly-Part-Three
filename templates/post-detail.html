@@ -14,7 +14,15 @@ Post Detail Page
     <img src="{{post.image_url}}" alt="post img" id="post_img">
 </div>
 <div>
-    <p>By {{user.first_name}} {{user.last_name}}</p>
+    <p>By {{user.first_name}} {{user.last_name}} on {{post.created_at}}</p>
+</div>
+<div>
+    <h2>Tags:</h2>
+    <ul>
+        {% for tag in tags %}
+        <li>{{tag.name}}</li>
+        {% endfor %}
+    </ul>
 </div>
 <div>
     <a href="/users/{{user.id}}">

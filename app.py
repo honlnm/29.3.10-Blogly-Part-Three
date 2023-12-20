@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Post
+from models import db, connect_db, User, Post, PostTag, Tag
 from dotenv import load_dotenv
 
 app = Flask(__name__)
@@ -23,7 +23,9 @@ with app.app_context():
 
 @app.route('/')
 def redirect_to_users():
-    return redirect('/users')
+    return render_template('home.html')
+
+##########################USERS########################
 
 @app.route('/users')
 def list_users():
@@ -96,11 +98,14 @@ def delete_user(userId):
 
     return redirect("/users")
 
+###############POSTS##########################
+
 @app.route('/users/<int:userId>/posts/new')
 def post_form(userId):
     """create user post"""
     user = User.query.get_or_404(userId)
-    return render_template("create-post.html", user=user)
+    tags = Tag.query.all()
+    return render_template("create-post.html", user=user, tags=tags)
 
 @app.route('/users/<int:userId>/posts/new', methods=['POST'])
 def create_post(userId):
@@ -108,11 +113,13 @@ def create_post(userId):
     title = request.form["title"]
     content = request.form["content"]
     user_id = userId
+    tag_ids = [int(num) for num in request.form.getlist("tag_checkbox")]
+    tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
     if request.form["post_image_url"] != "":
         image_url = request.form["post_image_url"]
-        new_post = Post(title=title, content=content, image_url=image_url, user_id=user_id)
+        new_post = Post(title=title, content=content, image_url=image_url, user_id=user_id, tags=tags)
     else:
-        new_post = Post(title=title, content=content, user_id=user_id)
+        new_post = Post(title=title, content=content, user_id=user_id, tags=tags)
 
     db.session.add(new_post)
     db.session.commit()
@@ -124,14 +131,16 @@ def show_post(postId):
     """show details about a single post"""
     post = Post.query.get_or_404(postId)
     user = User.query.get_or_404(post.user_id)
-    return render_template("post-detail.html", user=user, post=post)
+    tags = post.tags
+    return render_template("post-detail.html", user=user, post=post, tags=tags)
 
 @app.route('/posts/<int:postId>/edit')
 def display_post(postId):
     """show selected post for edit"""
     post = Post.query.get(postId)
     user = User.query.get_or_404(post.user_id)
-    return render_template('edit-post.html', post=post, user=user)
+    tags = Tag.query.all()
+    return render_template('edit-post.html', post=post, user=user, tags=tags)
 
 @app.route('/posts/<int:postId>/edit', methods=['POST'])
 def edit_post(postId):
@@ -140,12 +149,15 @@ def edit_post(postId):
     user = User.query.get_or_404(post.user_id)
     title = request.form["title"]
     content = request.form["content"]
+    tag_ids = [int(num) for num in request.form.getlist("tag_checkbox")]
+    
     if request.form["post_image_url"] != "":
         image_url = request.form["post_image_url"]
         post.image_url = image_url
 
     post.title = title
     post.content = content
+    post.tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
 
     db.session.add(post)
     db.session.commit()
@@ -161,3 +173,62 @@ def delete_post(postId):
     db.session.commit()
 
     return redirect('/')
+
+####################TAGS############################
+
+@app.route('/tags')
+def list_tags():
+    """shows list of all tags in db"""
+    tags = Tag.query.all()
+    return render_template('list-tags.html', tags=tags)
+
+@app.route('/tags/<int:tagId>')
+def show_tag(tagId):
+    """show selected tag"""
+    tags = Tag.query.get(tagId)
+    return render_template('show-tags.html', tags=tags)
+
+@app.route('/tags/new')
+def show_new_tag_form():
+    """show new tag form"""
+    return render_template('add-tag.html')
+
+@app.route('/tags/new', methods=["POST"])
+def create_tag():
+    """create new tag"""
+    tag = request.form["add_tag"]
+    new_tag = Tag(name=tag)
+
+    db.session.add(new_tag)
+    db.session.commit()
+
+    return redirect("/tags")
+
+@app.route('/tags/<int:tagId>/edit')
+def display_tag(tagId):
+    """show selected tag for edit"""
+    tag = Tag.query.get(tagId)
+    return render_template('edit-tag.html', tag=tag)
+
+@app.route('/tags/<int:tagId>/edit', methods=['POST'])
+def edit_tag(tagId):
+    """edit selected tag"""
+    tag = Tag.query.get(tagId)
+    tag_name = request.form["edit-tag"]
+
+    tag.name = tag_name
+
+    db.session.add(tag)
+    db.session.commit()
+
+    return redirect('/tags')
+
+@app.route('/tags/<int:tagId>/delete')
+def delete_tag(tagId):
+    """delete selected tag"""
+    row = Tag.query.filter(Tag.id == tagId)
+
+    row.delete()
+    db.session.commit()
+
+    return redirect('/tags')

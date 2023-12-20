@@ -16,6 +16,11 @@ New Post Form
         <input type="text" name="content" id="content" placeholder="Content">
         <label for="post_image_url">Image URL</label>
         <input type="URL" name="post_image_url" id="post_image_url" placeholder="Optional: Provide an Image URL Here">
+        {% if tags %}
+        {% for tag in tags %}
+        <input type="checkbox" id="post_tag_{{tag.id}}" name="tag_checkbox" value="{{tag.id}}">{{tag.name}}<br>
+        {% endfor %}
+        {% endif %}
         <a href="/users/{{user.id}}">
             <button type="button" id="post_cancel_btn" class="btn">Cancel</button>
         </a>

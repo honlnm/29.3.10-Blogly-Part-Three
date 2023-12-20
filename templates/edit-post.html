@@ -15,7 +15,16 @@ Post Edit Page
         <label for="content">Content</label>
         <input type="text" name="content" id="content" value="{{post.content}}">
         <label for="post_image_url">Image URL</label>
+        {% if post.image_url != None %}
         <input type="URL" name="post_image_url" id="post_image_url" value="{{post.image_url}}">
+        {% else %}
+        <input type="URL" name="post_image_url" id="post_image_url">
+        {% endif %}
+        {% if tags %}
+        {% for tag in tags %}
+        <input type="checkbox" id="edit_post_tag_{{tag.id}}" name="tag_checkbox" value="{{tag.id}}">{{tag.name}}<br>
+        {% endfor %}
+        {% endif %}
         <a href="/users/{{user.id}}">
             <button type="button" id="post_cancel_edit_btn" class="btn">Cancel</button>
         </a>
